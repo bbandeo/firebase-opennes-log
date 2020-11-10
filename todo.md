@@ -12,6 +12,10 @@ TO-DO LIST
 [ ]    App as a service
 
 
+// en el if the rl.on line tengo que llamar al almacén de buffer que está en otro archivo JS
+// después en este mismo archivo tengo que setear un set interval (fijarse el tema de bloqueo por el mismo RL)
+// y ese set interval recién llama a actualizar a la firebase database 
+
 
 
 
