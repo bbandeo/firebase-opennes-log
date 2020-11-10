@@ -17,7 +17,7 @@ const printOnError = (data) => {
 
 const printOnSuccess = (data) => {
 
-    console.log(data)
+    console.log("data")
 
     for (var i = 0; i < data.length; i++) {
 
@@ -32,8 +32,18 @@ const printOnSuccess = (data) => {
         let time = parseInt((new Date(timeStamp).getTime() / 1000).toFixed(0));
         let longTime = parseInt((new Date(timeStamp).getTime()).toFixed(0));
         let title = tagName.replace(".", "-");
+        
 
-        firebase.database().ref(`NEWVALUES_${title}/${longTime}`).set({
+
+        const dateObject = new Date(timeStamp);
+        const hours = dateObject.getHours();
+        const minutes = dateObject.getMinutes();
+        const seconds = dateObject.getSeconds();
+        const timeString = `${dateObject.getHours()}_${dateObject.getMinutes()}_${dateObject.getSeconds()}`; // finally, join to a time string
+        console.log(timeString) // 15h : 48m : 53s
+
+
+        firebase.database().ref(`${title}/${timeString}`).set({
             "ntagName": tagName,
             "tagValue": value,
             "QualityCode": qualityCode,
