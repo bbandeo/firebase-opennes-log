@@ -1,4 +1,6 @@
-const firebase = require("./firebase/firebase-connection")
+const firebase = require("./firebase/firebase-connection");
+const buffer = require('./firebase/buffer.js');
+
 
 const printSuccess = (data) => {
     let clientCookie = data.ClientCookie;
@@ -16,11 +18,8 @@ const printOnError = (data) => {
 }
 
 const printOnSuccess = (data) => {
-
-    console.log("data")
-
+    let logVal = {};
     for (var i = 0; i < data.length; i++) {
-
         let tagName = data[i].Name;
         let value = data[i].Value;
         let qualityCode = data[i].QualityCode;
@@ -29,29 +28,20 @@ const printOnSuccess = (data) => {
         let errorCode = data[i].ErrorCode;
         let changed = data[i].hasChanged;
         let errorDescription = data[i].ErrorDescription;
-        let time = parseInt((new Date(timeStamp).getTime() / 1000).toFixed(0));
+        let time = parseInt((new Date(timeStamp).getTime()).toFixed(0));
         let longTime = parseInt((new Date(timeStamp).getTime()).toFixed(0));
         let title = tagName.replace(".", "-");
-        
-
-
-        const dateObject = new Date(timeStamp);
-        const hours = dateObject.getHours();
-        const minutes = dateObject.getMinutes();
-        const seconds = dateObject.getSeconds();
-        const timeString = `${dateObject.getHours()}_${dateObject.getMinutes()}_${dateObject.getSeconds()}`; // finally, join to a time string
-        console.log(timeString) // 15h : 48m : 53s
-
-
-        firebase.database().ref(`${title}/${timeString}`).set({
-            "ntagName": tagName,
+        logVal = {
+            "tagName": tagName,
             "tagValue": value,
             "QualityCode": qualityCode,
             "Quality": quality,
-            "timeStamp": timeStamp,
+            "date": timeStamp,
+            "timeStamp": time,
             "tagValue": value,
             "hasChanged": changed
-        });
+        };
+        buffer.pushValue(logVal);
     }
 }
 

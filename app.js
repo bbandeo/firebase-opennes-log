@@ -1,24 +1,25 @@
 'use strict';
 const net = require('net');
 const readline = require('readline');
-const pipeFunctions = require("./pipeFunctions.js");
+const buffer = require('./firebase/buffer.js');
+const pipeFunctions = require("./pipeFunctions");
 const firebase = require("./firebase/firebase-connection");
 
-console.log("ARRANQUEYROS");
 
-
-const uploadTime = 5000;
+let uploadFeatures = [];
 const reconnTime = 5000;
+const uploadTime = 5000;
 
+console.log("Starting..");
 
 ///   OPEN PIPE READING FROM SIEMENS  ////
-
 const PIPE_PATH = "\\\\.\\pipe\\HmiRuntime";
 const connect = () => {
     let client = net.connect(PIPE_PATH, () => {
         console.log('Runtime: Connected');
         var Subscribecommand = `{"Message":"SubscribeTag","Params":{"Tags":["status_moviP.corriente","status_moviZ.corriente"]},"ClientCookie":"mySubscription1"}\n`;
         client.write(Subscribecommand);
+        // ACA ESCRIBIR LOG DE PIPE CONECTADO
         const rl = readline.createInterface({
             input: client,
             crlfDelay: Infinity
@@ -49,9 +50,8 @@ const connect = () => {
         }, reconnTime);
     });
 
-
     client.on('close', (e) => {
-    // ACA ESCRIBIR LOG DE RUNTIME CERRADO
+        // ACA ESCRIBIR LOG DE RUNTIME CERRADO
         client.setTimeout(() => {
             client.destroy();
         }, reconnTime);
@@ -65,9 +65,30 @@ const connect = () => {
 }
 
 
+connect();
+
 
 setInterval(() => {
-    console.log("Paso INTERAVLO POR AQUI");
-}, 2500);
 
-connect()
+    uploadFeatures = buffer.readAndDeleteValues();
+    uploadFeatures.forEach(e => {
+        const dateObject = new Date(e.timeStamp);
+        const hours = dateObject.getHours();
+        const minutes = dateObject.getMinutes();
+        const seconds = dateObject.getSeconds();
+        const timeString = `${hours}_${minutes}_${seconds}`;
+        let title = e.tagName.replace(".", "-");
+            firebase.database().ref(`${title}`).child(timeString).set({
+                "tagName": e.tagName,
+                "tagValue": e.tagValue,
+                "Quality": e.Quality,
+                "server_timestamp":{  
+                    ".sv":"timestamp"   },
+                "system_timestamp": e.timeStamp,
+                "system_date": e.date,
+                "hasChanged": e.hasChanged
+            });
+    });    
+    console.log("Uploaded..");
+}, uploadTime);
+

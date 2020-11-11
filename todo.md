@@ -8,14 +8,17 @@ TO-DO LIST
 
 [ ]    Resolver para desconexión de internet
 
-[ ]    
-
-[ ]    App as a service
+[ ]    App as a service - Documento descriptivo del logger para open, para pedir autorización
 
 [ ]    Tiempo crítico de pérdida de datos (Intentar reconexión cada cuanto)
 
 [✔]    Cuando runtime no está en ejecución Throw er unhandled error event
 
+[ ]    Si Node cae no hay backup de los logs
+
+[ ]    Reiniciar el servicio con un ejecutable para que en caso de caída sea facil de levantar por el usuario remoto. 
+
+[ ]    Posibilidad de variar desde el scada la forma de tomar los datos ( forma simple, por tiempo de operación, etcétera )
 
 
 
