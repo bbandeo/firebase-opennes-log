@@ -4,11 +4,12 @@ const readline = require('readline');
 const buffer = require('./firebase/buffer.js');
 const pipeFunctions = require("./pipeFunctions");
 const firebase = require("./firebase/firebase-connection");
-
-
+const PIPE_PATH = "\\\\.\\pipe\\HmiRuntime";
 let uploadFeatures = [];
-const reconnTime = 5000;
+const reconnMinutes = 3;
+const reconnTime = 100 * 60 * reconnMinutes;
 const uploadTime = 5000;
+const userNum = 299;
 console.log("Starting..");
 
 const formatDateNow = () => {
@@ -20,18 +21,22 @@ const formatDateNow = () => {
     return timeString;
 }
 
+
+// DELETE DATABASE
 if (true) { firebase.database().ref().remove(); }
 
-///   OPEN PIPE READING FROM SIEMENS  ////
-
-const PIPE_PATH = "\\\\.\\pipe\\HmiRuntime";
-
+///   CONEXIÓN OPEN PIPE SIEMENS  ////
 const connect = () => {
     let client = net.connect(PIPE_PATH, () => {
-        console.log('Runtime: Connected');
         var Subscribecommand = `{"Message":"SubscribeTag","Params":{"Tags":["status_moviP.corriente","status_moviZ.corriente"]},"ClientCookie":"mySubscription1"}\n`;
         client.write(Subscribecommand);
-        // ACA ESCRIBIR LOG DE PIPE CONECTADO
+        const timeString = formatDateNow();
+        firebase.database().ref(userNum).child(`/Eventos/pipe-ConnectionSuccess/${timeString}`).set({
+            "Descripcion": "Conexión establecida con RT",
+            "server_timestamp": {
+                ".sv": "timestamp"
+            }
+        });
         const rl = readline.createInterface({
             input: client,
             crlfDelay: Infinity
@@ -55,10 +60,13 @@ const connect = () => {
     });
 
     client.on('error', (err) => {
-        console.log(`Error de conexión con runtime, reintentando en ${reconnTime / 1000} segundos.`);
+        console.log(`Error de conexión con runtime, reintentando en ${reconnMinutes} minutos.`);
         const timeString = formatDateNow();
-        firebase.database().ref(`Eventos`).child("pipe-connErr").child(timeString).set({
-            "error": "Error de conexión con runtime",
+        firebase.database().ref(userNum).child(`/Eventos/pipe-ConnectionError/${timeString}`).set({
+            "Descripcion": "Error de conexión con RT",
+            "server_timestamp": {
+                ".sv": "timestamp"
+            }
         });
         setTimeout(() => {
             console.log("Reconnecting..");
@@ -68,23 +76,27 @@ const connect = () => {
 
     client.on('close', (e) => {
         console.log("CLOSED");
-        // ACA ESCRIBIR LOG DE RUNTIME CERRADO
         client.setTimeout(() => {
             client.destroy();
         }, reconnTime);
     });
 
     client.on('end', () => {
-        //      ACA ESCRIBIR LOG DE RUNTIME FINALIZADO
+        const timeString = formatDateNow();
+        firebase.database().ref(userNum).child(`Eventos/pipe-End/${timeString}`).set({
+            "Descripción": "Se cerró la conexión con RT",
+            "server_timestamp": {
+                ".sv": "timestamp"
+            }
+        });
         console.log('FINALIZÓ RUNTIME');
         connect();
     });
 }
-
 connect();
 
+// INTERVALO DE ESCRITURA EN DB
 setInterval(() => {
-
     let connectedRef = firebase.database().ref('.info/connected');
     connectedRef.on('value', function (snap) {
         if (snap.val() === true) {
@@ -93,9 +105,9 @@ setInterval(() => {
             if (uploadFeatures.length > 0) {
                 buffer.deleteValues();
                 uploadFeatures.forEach(e => {
-                     const timeString = formatDateNow();
+                    const timeString = formatDateNow();
                     let title = e.tagName.replace(".", "-");
-                    firebase.database().ref(`${title}`).child(timeString).set({
+                    firebase.database().ref(`${userNum}/${title}`).child(timeString).set({
                         "tagName": e.tagName,
                         "tagValue": e.tagValue,
                         "Quality": e.Quality,
@@ -114,7 +126,8 @@ setInterval(() => {
 }, uploadTime);
 
 
-// Si está conectado genero un campo users - nro - conectado
+
+// IF conectado genero un documento users/nro/conectado
 var myConnectionsRef = firebase.database().ref('users/299/connections');
 var connectedRef = firebase.database().ref('.info/connected');
 connectedRef.on('value', function (snap) {
