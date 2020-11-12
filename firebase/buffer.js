@@ -5,10 +5,14 @@ const pushValue = (object) => {
     console.log("PUSHEADO");
 }
 
-const readAndDeleteValues = () => {
+const readValues = () => {
     let values = pipeBuffer;
-    pipeBuffer = [];
     return values;
+}
+
+const deleteValues = () => {
+    pipeBuffer = [];
+    return 0;
 }
 
 const showValues = () => {
@@ -18,6 +22,7 @@ const showValues = () => {
 
 module.exports = {
     pushValue,
-    readAndDeleteValues,
+    readValues,
+    deleteValues,
     showValues
 }

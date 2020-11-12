@@ -38,3 +38,15 @@ Se debe generar un buffer local para actualizar DB cada 10 segundos aproximadame
                                                 true: Subo valores a Firebase - borro contenido de buffer.
 - 10 seg: Chequeo si está viva la conexión <
                                                 false: Sigo almacenando valores en buffer iterando cada 10 segundos checkIfAlive() 
+
+
+
+
+
+
+ERRORES POSIBLES : 
+
+                No se conectò a pipe
+                No se conectó a database
+                No se conectó a internet
+                Programa not running
