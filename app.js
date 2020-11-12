@@ -55,7 +55,7 @@ const connect = () => {
     });
 
     client.on('error', (err) => {
-        console.log(`Error de conexión con runtime, intentando en ${reconnTime / 1000} segundos.`);
+        console.log(`Error de conexión con runtime, reintentando en ${reconnTime / 1000} segundos.`);
         const timeString = formatDateNow();
         firebase.database().ref(`Eventos`).child("pipe-connErr").child(timeString).set({
             "error": "Error de conexión con runtime",
