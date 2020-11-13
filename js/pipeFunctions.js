@@ -1,5 +1,5 @@
-const firebase = require("./firebase/firebase-connection");
-const buffer = require('./firebase/buffer.js');
+const firebase = require("./firebase-connection");
+const buffer = require('./buffer.js');
 
 
 const printSuccess = (data) => {

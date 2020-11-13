@@ -1,9 +1,9 @@
 'use strict';
 const net = require('net');
 const readline = require('readline');
-const buffer = require('./firebase/buffer.js');
-const pipeFunctions = require("./pipeFunctions");
-const firebase = require("./firebase/firebase-connection");
+const buffer = require('./js/buffer.js');
+const pipeFunctions = require("./js/pipeFunctions");
+const firebase = require("./js/firebase-connection");
 const PIPE_PATH = "\\\\.\\pipe\\HmiRuntime";
 const userNum = 299;
 console.log("Starting..");
