@@ -5,12 +5,12 @@ const buffer = require('./firebase/buffer.js');
 const pipeFunctions = require("./pipeFunctions");
 const firebase = require("./firebase/firebase-connection");
 const PIPE_PATH = "\\\\.\\pipe\\HmiRuntime";
-let uploadFeatures = [];
-const reconnMinutes = 3;
-const reconnTime = 100 * 60 * reconnMinutes;
-const uploadTime = 5000;
 const userNum = 299;
 console.log("Starting..");
+let uploadFeatures = [];
+let reconnMinutes = 3;
+let reconnTime = 100 * 60 * reconnMinutes;
+let uploadTime = 5000;
 
 const formatDateNow = () => {
     const dateObject = new Date(Date.now());
@@ -23,7 +23,7 @@ const formatDateNow = () => {
 
 
 // DELETE DATABASE
-if (true) { firebase.database().ref().remove(); }
+//if (true) { firebase.database().ref().remove(); }
 
 ///   CONEXIÓN OPEN PIPE SIEMENS  ////
 const connect = () => {
@@ -60,6 +60,7 @@ const connect = () => {
     });
 
     client.on('error', (err) => {
+        client.destroy();
         console.log(`Error de conexión con runtime, reintentando en ${reconnMinutes} minutos.`);
         const timeString = formatDateNow();
         firebase.database().ref(userNum).child(`/Eventos/pipe-ConnectionError/${timeString}`).set({
