@@ -1,6 +1,15 @@
 const firebase = require("./firebase-connection");
 const buffer = require('./buffer.js');
 
+const formatDateNow = () => {
+    const dateObject = new Date(Date.now());
+    const hours = dateObject.getHours();
+    const minutes = dateObject.getMinutes();
+    const seconds = dateObject.getSeconds();
+    const timeString = `${hours}_${minutes}_${seconds}`;
+    return timeString;
+}   // ACA HAY QUE DARLE VUELTA A LA FECHA. PROBABLEMENTE HAY QUE USAR LA DE SISTEMA NOMAS PORQUE SI SE CAE INTERNET NO HAY FORMA DE REGISTRAR
+    // HAY DOS HORAS DE SISTEMA: LA DE SIEMENS Y LA DE WINDOWS
 
 const printSuccess = (data) => {
     let clientCookie = data.ClientCookie;
@@ -29,8 +38,9 @@ const printOnSuccess = (data) => {
         let changed = data[i].hasChanged;
         let errorDescription = data[i].ErrorDescription;
         let time = parseInt((new Date(timeStamp).getTime()).toFixed(0));
-        let longTime = parseInt((new Date(timeStamp).getTime()).toFixed(0));
-        let title = tagName.replace(".", "-");
+
+
+
         logVal = {
             "tagName": tagName,
             "tagValue": value,

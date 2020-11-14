@@ -123,6 +123,7 @@ setInterval(() => {
                 console.log("Uploaded..");
             } else console.log("No data from Pipe");
         } else console.log("Conexión con DB fracasó");
+        console.log(buffer.readValues().length);
     });
 }, uploadTime);
 
