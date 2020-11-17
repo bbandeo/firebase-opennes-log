@@ -20,9 +20,24 @@ const showValues = () => {
 }
 
 
+const formatDateNow = () => {
+    const dateObject = new Date(Date.now());
+    const year = dateObject.getFullYear();
+    const day = dateObject.getDay();
+    const month = dateObject.getMonth();
+    const hours = dateObject.getHours();
+    const minutes = dateObject.getMinutes();
+    const seconds = dateObject.getSeconds();
+    const timeString = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    return timeString;
+}
+const userNum = 299;
+
 module.exports = {
     pushValue,
     readValues,
     deleteValues,
-    showValues
+    showValues,
+    formatDateNow,
+    userNum
 }
