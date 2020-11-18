@@ -23,5 +23,4 @@ connectedRef.on('value', function (snap) {
     }
 });
 
-
 module.exports = app;
