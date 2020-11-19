@@ -38,9 +38,6 @@ const printOnSuccess = (data) => {
         let changed = data[i].hasChanged;
         let errorDescription = data[i].ErrorDescription;
         let time = parseInt((new Date(timeStamp).getTime()).toFixed(0));
-
-
-
         logVal = {
             "tagName": tagName,
             "tagValue": value,

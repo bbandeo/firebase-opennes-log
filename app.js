@@ -18,37 +18,49 @@ let uploadTime = 5000;
 
 // INTERVALO DE ESCRITURA EN DB
 setInterval(() => {
+  let c = 0;
   let connectedRef = firebase.database().ref(".info/connected");
-  connectedRef.on("value", function (snap) {
+  connectedRef.on("value", (snap) => {
     if (snap.val() === true) {
       uploadFeatures = fn.readValues();
-      console.log(uploadFeatures.length);
-      if (uploadFeatures.length > 0) {
-        payload = {};
-        uploadFeatures.forEach((e) => {
-          const timeString = fn.formatDateNow();
-          let title = e.tagName.replace(".", "-");
-          // firebase.database().ref(`${userNum}/${title}`).child(timeString).set({
-          message = {
-            "tagName": e.tagName,
-            "tagValue": e.tagValue,
-            "Quality": e.Quality,
-            "server_timestamp": {
-              ".sv": "timestamp",
-            },
-            "system_timestamp": e.timeStamp,
-            "system_date": e.date,
-            "hasChanged": e.hasChanged,
-          };
-          payload[`Logs/${title}/${timeString}`] = message;
-        });
-        ref.update(payload);
-        console.log("Uploaded..");
-        console.log(payload);
-        // VER ACA QUE ESTOY SUBIENDO CUALQUIER COSA
+      // console.log(uploadFeatures.length);
+          if (uploadFeatures.length > 0) {
+            payload = {};
+                  uploadFeatures.forEach((e) => {
+                    const timeString = fn.formatDateNow();
+                    let title = e.tagName.replace(/\./g,"-");
+                    message = {
+                      "tagName": e.tagName,
+                      "tagValue": e.tagValue,
+                      "Quality": e.Quality,
+                      "server_timestamp": {
+                        ".sv": "timestamp",
+                      },
+                      "system_timestamp": e.timeStamp,
+                      "hasChanged": e.hasChanged,
+                      User: fn.userNum                      
+                    };
+                    if(message.hasChanged === 1) {payload[`Logs/${title}/${timeString}`] = message;}
+                    
+                  });
+            console.log(payload);
+            ref.update(payload);
+            console.log("Uploaded..");
+            // VER ACA QUE ESTOY SUBIENDO CUALQUIER COSA
+          }
+          fn.deleteValues();
+    } else {
+      message = {
+          "Descripcion": "Error de conexión con Database",
+          "server_timestamp": {
+            ".sv": "timestamp",
+          },
+        }
+        console.log("Conexión con DB fracasó");
+        setTimeout( () => { 
+            console.log("Reintentando conexión"); 
+      }, reconnTime);
       }
-    } else console.log("Conexión con DB fracasó");
     console.log(fn.readValues().length);
-    fn.deleteValues();
   });
 }, uploadTime);
