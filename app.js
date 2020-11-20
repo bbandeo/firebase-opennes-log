@@ -16,14 +16,12 @@ let uploadTime = 5000;
 // DELETE DATABASE
 // if (true) { firebase.database().ref().remove(); }
 
-// INTERVALO DE ESCRITURA EN DB
+// INTERVALO DE ESCRITURA EN FIREBASE
 setInterval(() => {
-  let c = 0;
   let connectedRef = firebase.database().ref(".info/connected");
   connectedRef.on("value", (snap) => {
     if (snap.val() === true) {
       uploadFeatures = fn.readValues();
-      // console.log(uploadFeatures.length);
           if (uploadFeatures.length > 0) {
             payload = {};
                   uploadFeatures.forEach((e) => {
@@ -40,27 +38,29 @@ setInterval(() => {
                       "hasChanged": e.hasChanged,
                       User: fn.userNum                      
                     };
-                    if(message.hasChanged === 1) {payload[`Logs/${title}/${timeString}`] = message;}
-                    
+                    payload[`Logs/${title}/${timeString}`] = message;
                   });
             console.log(payload);
             ref.update(payload);
             console.log("Uploaded..");
             // VER ACA QUE ESTOY SUBIENDO CUALQUIER COSA
+            fn.deleteValues();
           }
-          fn.deleteValues();
     } else {
-      message = {
-          "Descripcion": "Error de conexión con Database",
-          "server_timestamp": {
-            ".sv": "timestamp",
-          },
-        }
+        const timeString = fn.formatDateNow();
+        message = {
+              "Descripcion": "Error de conexión con Database",
+              "server_timestamp": {
+                ".sv": "timestamp",
+                },
+              }
+        payload[`/Eventos/firebase-ConnectionFailed/${timeString}`] = message;
+        ref.update(payload)
         console.log("Conexión con DB fracasó");
         setTimeout( () => { 
             console.log("Reintentando conexión"); 
-      }, reconnTime);
-      }
-    console.log(fn.readValues().length);
+            connect();
+      }, 30000);
+    }
   });
 }, uploadTime);
