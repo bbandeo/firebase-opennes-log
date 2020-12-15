@@ -7,6 +7,7 @@ yarn-error.log*
 lerna-debug.log*
 helpFn.js
 todo.md
+firebase-connection.js
 # Service worker
 daemon/
 
