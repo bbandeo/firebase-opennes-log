@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 helpFn.js
-
+todo.md
 # Service worker
 daemon/
 
